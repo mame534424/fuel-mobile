@@ -60,10 +60,10 @@ The Fuel Management System Mobile App is designed to revolutionize how users man
 
 > Screenshots will be added here as the app development progresses.
 ### Login and signup Screen
-![Login](./screenshots/login_page.png)
+![Login](./screenshoots/login_page.png) ![map](./screenshoots/fuel_map.png) ![station details](./screenshoots/station_details_light.png) ![station details light](./screenshoots/station_details.png) ![booking details](./screenshoots/booking_details.png) ![booking confirmation](./screenshoots/booking_confirmation.png)
 
 ### map screen
-![map](./screenshoots/fuel_map.png)
+
 
 
 ### Authentication Screens
