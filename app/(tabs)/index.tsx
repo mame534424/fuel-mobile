@@ -1,63 +1,70 @@
 import "../../global.css"
 
-import { View, Text, Pressable }
+import { View, Text, Pressable,ActivityIndicator }
 from "react-native";
 
 import { useThemeStore }
 from "@/stores/themeStore";
 
+import MapView
+from "react-native-maps";
+
+import { useUserLocation }
+from "@/features/maps/hooks/useUserLocation";
+
+import { useNearbyStations }
+from "@/features/maps/hooks/useStationLocation";
+
+import FuelMarker
+from "@/features/maps/components/FuelMarker";
+
 export default function MapScreen() {
 
+  const {theme,toggleTheme} = useThemeStore();
+
+  const {location,loading} = useUserLocation();
+
   const {
-    theme,
-    toggleTheme,
-  } = useThemeStore();
+    stations,
+  } = useNearbyStations(
+    location?.latitude,
+    location?.longitude
+  );
+
+  if (loading || !location) {
+    return (
+      <View
+        className="
+          flex-1
+          items-center
+          justify-center
+        "
+      >
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   return (
-    <View
-      className="
-        flex-1
-        items-center
-        justify-center
-        bg-background
-        dark:bg-black
-      "
+    <MapView
+      style={{ flex: 1 }}
+
+      showsUserLocation
+
+      initialRegion={{
+        latitude: location.latitude,
+        longitude: location.longitude,
+
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      }}
     >
-      <Text
-        className="
-          text-3xl
-          font-bold
-          text-green-700
-          dark:text-white
-        "
-      >
-        E-Fuel
-      </Text>
-
-      <Text
-        className="
-          mt-3
-          text-black
-          dark:text-white
-        "
-      >
-        Current Theme: {theme}
-      </Text>
-
-      <Pressable
-        onPress={toggleTheme}
-        className="
-          mt-6
-          rounded-2xl
-          bg-green-700
-          px-6
-          py-4
-        "
-      >
-        <Text className="text-white">
-          Toggle Theme
-        </Text>
-      </Pressable>
-    </View>
+      {stations.map((station) => (
+        <FuelMarker
+          key={station.id}
+          station={station}
+        />
+      ))}
+    </MapView>
   );
 }
