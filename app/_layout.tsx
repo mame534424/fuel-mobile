@@ -2,8 +2,7 @@ import "../global.css";
 
 import { Stack } from "expo-router";
 
-import ThemeProvider
-from "@/theme/themeProvider";
+import ThemeProvider from "@/theme/themeProvider";
 
 export default function RootLayout() {
   return (
@@ -14,9 +13,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen
-          name="booking/[stationId]"
-        />
+        <Stack.Screen name="booking/[stationId]" />
         <Stack.Screen name="auth/login" />
         <Stack.Screen name="auth/signup" />
       </Stack>
