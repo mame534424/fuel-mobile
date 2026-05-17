@@ -2,6 +2,13 @@ import "../global.css";
 
 import { Stack } from "expo-router";
 
-export default function Layout() {
-  return <Stack />;
+export default function RootLayout() {
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="booking/[stationId]" />
+      <Stack.Screen name="auth/login" />
+      <Stack.Screen name="auth/signup" />
+    </Stack>
+  );
 }
