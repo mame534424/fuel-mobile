@@ -19,7 +19,7 @@ export default function MapScreen() {
         flex-1
         items-center
         justify-center
-        bg-white
+        bg-background
         dark:bg-black
       "
     >
