@@ -1,5 +1,6 @@
-import { Marker }
-from "react-native-maps";
+import { Marker } from "react-native-maps";
+import { Image } from "react-native";
+
 
 import { Station }
 from "../types/station.types";
@@ -26,7 +27,17 @@ export default function FuelMarker({
         longitude: station.longitude,
       }}
       title={station.name}
-      pinColor={pinColor}
-    />
+    >
+      <Image
+        source={require(
+          "../../../assets/images/fuel_marker.png"
+        )}
+        style={{
+          width: 42,
+          height: 42,
+        }}
+        resizeMode="contain"
+      />
+    </Marker>
   );
 }
