@@ -26,7 +26,6 @@ export default function FuelMarker({
         longitude: station.longitude,
       }}
       title={station.name}
-      description={`${station.queueCount} cars ahead`}
       pinColor={pinColor}
     />
   );
