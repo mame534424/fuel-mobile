@@ -2,23 +2,22 @@ import { Marker } from "react-native-maps";
 import { Image } from "react-native";
 
 
-import { Station }
+import { StationNearby }
 from "../types/station.types";
 
 interface Props {
-  station: Station;
+  station: StationNearby
+  onPress: () => void;
 }
 
 export default function FuelMarker({
   station,
+  onPress
 }: Props) {
 
   let pinColor = "green";
 
-  if (station.status === "LOW_FUEL") {
-    pinColor = "red";
-  }
-
+  
 
   return (
     <Marker
@@ -27,6 +26,7 @@ export default function FuelMarker({
         longitude: station.longitude,
       }}
       title={station.name}
+      onPress={onPress}
     >
       <Image
         source={require(

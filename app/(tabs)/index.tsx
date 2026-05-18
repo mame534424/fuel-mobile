@@ -1,10 +1,7 @@
 import "../../global.css"
 
-import { View, Text, Pressable,ActivityIndicator }
+import { View, ActivityIndicator }
 from "react-native";
-
-import { useThemeStore }
-from "@/stores/themeStore";
 
 import MapView
 from "react-native-maps";
@@ -18,18 +15,48 @@ from "@/features/maps/hooks/useStationLocation";
 import FuelMarker
 from "@/features/maps/components/FuelMarker";
 
+import { useEffect, useRef, useState }
+from "react";
+
+import BottomSheet
+from "@gorhom/bottom-sheet";
+
+import StationBottomSheet
+from "@/features/maps/components/StationBottomSheet";
+
+import { StationNearby }
+from "@/features/maps/types/station.types";
+import { useStationDetails } from "@/features/maps/hooks/useStationDetails";
+
 export default function MapScreen() {
 
-  const {theme,toggleTheme} = useThemeStore();
-
   const {location,loading} = useUserLocation();
+  const bottomSheetRef =  useRef<BottomSheet>(null);
 
-  const {
-    stations,
-  } = useNearbyStations(
+  const [selectedStation,setSelectedStation] = useState<StationNearby | null>(null);
+
+  const { stations } =
+  useNearbyStations(
     location?.latitude,
     location?.longitude
   );
+  const {
+  stationDetails,
+} = useStationDetails(
+  selectedStation?.id
+);
+  const handleMarkerPress = (
+  station: StationNearby) => {
+    setSelectedStation(station);
+    
+};
+useEffect(() => {
+
+  if (selectedStation) {
+    bottomSheetRef.current?.snapToIndex(1);
+  }
+
+}, [selectedStation]);
 
   if (loading || !location) {
     return (
@@ -46,25 +73,44 @@ export default function MapScreen() {
   }
 
   return (
-    <MapView
-      style={{ flex: 1 }}
+    <View className="flex-1">
+        <MapView
+        style={{ flex: 1 }}
 
-      showsUserLocation
+        showsUserLocation
 
-      initialRegion={{
-        latitude: location.latitude,
-        longitude: location.longitude,
+        initialRegion={{
+          latitude: location.latitude,
+          longitude: location.longitude,
 
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      }}
-    >
-      {stations.map((station) => (
-        <FuelMarker
-          key={station.id}
-          station={station}
-        />
-      ))}
-    </MapView>
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        }}
+      >
+        {stations.map((station) => (
+          <FuelMarker
+            key={station.id}
+            station={station}
+            onPress={() =>
+              handleMarkerPress(station)
+            }
+          />
+        ))}
+      </MapView>
+      
+      <StationBottomSheet
+        station={stationDetails}
+        bottomSheetRef={bottomSheetRef}
+        onBook={() => {
+          // Handle booking logic here
+          console.log("Booking station:", stationDetails?.stationName);
+        }}
+        
+
+        
+      />
+    </View>
+    
+    
   );
 }

@@ -1,14 +1,37 @@
-export interface FuelTypes{
-    type:"PETROL"|"DIESEL";
-    availableFuel:number;
+export interface Fuel {
+  fuelTypeId: number;
 
+  fuelTypeName: string;
+
+  quantity: number;
+
+  isAvailable: boolean;
+
+  updatedAt: string;
 }
-export interface Station{
+
+export interface Booking {
+  count: string;
+}
+
+export interface Station {
+  stationId: string;
+
+  stationName: string;
+
+  fuels: Fuel[];
+
+  bookings: Booking[];
+}
+export interface StationNearby{
     id:string;
     name:string;
+    code:string;
     latitude:number;
     longitude:number;
-    queueCount:number;
-    fuelTypes:FuelTypes[];
-    status:"LOW_FUEL"|"HIGH_FUEL"
+    isActive:boolean;
+    ownerId:string;
+    createdAt:string;
 }
+export interface StationNearbyResponse{
+    stationNearby:StationNearby[];}

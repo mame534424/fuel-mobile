@@ -1,7 +1,7 @@
 import { useEffect, useState }
 from "react";
 
-import { Station }
+import { Station, StationNearby, StationNearbyResponse }
 from "../types/station.types";
 
 import {
@@ -14,7 +14,7 @@ export function useNearbyStations(
 ) {
 
   const [stations, setStations] =
-    useState<Station[]>([]);
+    useState<StationNearby[]>([]);
 
   const [loading, setLoading] =
     useState(true);
