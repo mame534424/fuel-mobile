@@ -9,26 +9,25 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler"; 
 import StationBottomSheet from "@/features/maps/components/StationBottomSheet";
 import { Station, StationNearby } from "@/features/maps/types/station.types";
-import { getStationStatus } from "@/features/maps/services/station.service";
+
+import { useStationDetails } from "@/features/maps/hooks/useStationDetails";
 
 export default function MapScreen() {
   const { location, loading } = useUserLocation();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selectedStation, setSelectedStation] = useState<StationNearby | null>(null);
-  const [stationDetails, setStationDetails] = useState<Station | null>(null);
+  
 
   const { stations } = useNearbyStations(
     location?.latitude,
     location?.longitude
   );
+  const {stationDetails,} = useStationDetails(selectedStation?.id);
 
   const handleMarkerPress = async (station: StationNearby) => {
     setSelectedStation(station);
-    const details = await getStationStatus(station.id);
-    setStationDetails(details);
-
-
-  };
+    };
+    
   useEffect(() => {
     if (selectedStation) {
       // Index 0 requires snapPoints to be defined on the BottomSheet wrapper
