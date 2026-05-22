@@ -8,15 +8,27 @@ import { useEffect, useRef, useState } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler"; 
 import StationBottomSheet from "@/features/maps/components/StationBottomSheet";
-import { Station, StationNearby } from "@/features/maps/types/station.types";
-
+import {StationNearby } from "@/features/maps/types/station.types";
 import { useStationDetails } from "@/features/maps/hooks/useStationDetails";
+import { router } from "expo-router";
+import { useAuthStore} from "@/features/auth/stores/auth.stores";
+import {useBookingStore} from "@/features/booking/stores/booking.store";
 
 export default function MapScreen() {
   const { location, loading } = useUserLocation();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selectedStation, setSelectedStation] = useState<StationNearby | null>(null);
-  
+  const user =
+  useAuthStore(
+    (state) => state.user
+  );
+
+const setPendingStation =
+  useBookingStore(
+    (state) =>
+      state.setPendingStation
+  );
+
 
   const { stations } = useNearbyStations(
     location?.latitude,
@@ -27,7 +39,31 @@ export default function MapScreen() {
   const handleMarkerPress = async (station: StationNearby) => {
     setSelectedStation(station);
     };
-    
+
+  const handleBooking = () => {
+
+      if (!stationDetails?.stationId) {
+        return;
+      }
+
+    if (!user) {
+
+    setPendingStation(
+      stationDetails?.stationId
+    );
+
+    router.push(
+      "/auth/login"
+    );
+
+    return;
+  }
+
+  router.push(
+    `/booking/${stationDetails?.stationId}`
+  );
+};
+
   useEffect(() => {
     if (selectedStation) {
       // Index 0 requires snapPoints to be defined on the BottomSheet wrapper
@@ -69,7 +105,7 @@ export default function MapScreen() {
         </MapView>
         
         {/* Pass ref down directly */}
-        <StationBottomSheet bottomSheetRef={bottomSheetRef} station={stationDetails} onBook={() => console.log("Booking fuel...")} />
+        <StationBottomSheet bottomSheetRef={bottomSheetRef} station={stationDetails} onBook={() => handleBooking()} />
       </View>
     </GestureHandlerRootView>
   );

@@ -10,12 +10,14 @@ import {loginUser} from "@/features/auth/services/auth.service";
 import {useAuthStore} from "@/features/auth/stores/auth.stores";
 
 import TextInputField from "@/components/ui/TextInputField";
-
+import { useBookingStore} from "@/features/booking/stores/booking.store";
 
 
 export default function LoginScreen() {
 
   const [loading, setLoading] = useState(false);
+
+  const {pendingStationId,clearPendingStation} = useBookingStore();
 
   const login = useAuthStore( (state) => state.login);
 
@@ -46,7 +48,19 @@ export default function LoginScreen() {
           response.user
         );
 
-        router.replace("/"); // what does these line of code
+        if (
+            pendingStationId
+        ) {
+
+            router.replace(
+                `/booking/${pendingStationId}`
+            );
+
+            clearPendingStation();
+
+        } else {
+            router.back();
+        }
 
       } catch (error) {
 
