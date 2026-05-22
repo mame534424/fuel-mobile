@@ -7,8 +7,19 @@ import {
 from "react-native-gesture-handler";
 
 import ThemeProvider from "@/theme/themeProvider";
+import { useEffect } from "react";
+
+import { useAuthStore } from "@/features/auth/stores/auth.stores";
 
 export default function RootLayout() {
+    const restoreSession =useAuthStore((state) => state.restoreSession);
+
+    useEffect(() => {
+
+        restoreSession();
+    
+    }, []);
+    
   return (
     <GestureHandlerRootView
       style={{ flex: 1 }}
