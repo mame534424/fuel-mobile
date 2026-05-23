@@ -2,6 +2,7 @@ import {
   View,
   Text,
   Pressable,
+  ActivityIndicator,
   TextInput,
 } from "react-native";
 
@@ -10,67 +11,158 @@ import {
 } from "react";
 
 import {
-  useLocalSearchParams,
+  router,
 } from "expo-router";
+
+import {
+  useAuthStore,
+} from "@/features/auth/stores/auth.stores";
+
+import {
+  useStationStore,
+} from "@/features/maps/stores/station.stores";
+
+import {
+  createBooking,
+} from "@/features/booking/services/booking.service";
+
+import { useLocalSearchParams } from "expo-router";
 
 export default function BookingScreen() {
 
-  const { stationId } =
-    useLocalSearchParams();
+  const [loading, setLoading] =
+    useState(false);
 
-  const [
-    fuelType,
-    setFuelType,
-  ] = useState("PETROL");
+  const [plateNumber, setPlateNumber] =
+    useState("");
 
-  const [
-    quantity,
-    setQuantity,
-  ] = useState("");
+  const [fuelTypeId, setFuelTypeId] =
+    useState("");
+
+  const { user } =
+    useAuthStore();
+  
+  const params = useLocalSearchParams();
+
+
+  const {
+    stationDetails,
+    clearStationDetails,
+  } = useStationStore();
+
+  const fuelTypes = stationDetails?.fuels
+  const stationId = params.stationId as string;
+  if (!stationDetails || stationDetails.stationId !== stationId) {
+  
+    router.replace("/");}
+
 
   const handleBooking =
-    () => {
+    async () => {
 
-      console.log({
-        stationId,
-        fuelType,
-        quantity,
-      });
+      if (!stationDetails) {
+        return;
+      }
 
-      // API call later
+      if (!fuelTypeId) {
+
+        console.log(
+          "Select fuel type"
+        );
+
+        return;
+      }
+
+      if (!plateNumber) {
+
+        console.log(
+          "Enter plate number"
+        );
+
+        return;
+      }
+
+      try {
+
+        setLoading(true);
+
+        const payload = {
+
+          stationId:
+            stationDetails.stationId,
+
+          fuelTypeId,
+
+          plateNumber,
+
+          userId:
+            user?.id,
+        };
+
+        console.log(payload);
+
+        const response =
+          await createBooking(
+            payload
+          );
+
+        clearStationDetails();
+
+        router.replace(
+          "/status"
+        );
+
+      } catch (error) {
+
+        console.log(error);
+
+      } finally {
+
+        setLoading(false);
+
+      }
   };
 
   return (
+
     <View
       className="
         flex-1
-        bg-background
+        bg-white
         px-6
         pt-20
       "
     >
 
+      {/* TITLE */}
+
       <Text
         className="
           text-3xl
           font-bold
-          text-primary
         "
       >
-        Fuel Booking
+        Station Booking
       </Text>
+
+      {/* STATION NAME */}
 
       <Text
         className="
-          mt-2
-          text-gray-500
+          mt-3
+          text-lg
+          text-gray-600
         "
       >
-        Station ID:
-        {stationId}
+        Station:
+        {" "}
+        {
+          stationDetails
+            ?.stationName
+        }
       </Text>
 
-      {/* Fuel Type */}
+      {/* FUEL TYPE */}
 
       <Text
         className="
@@ -80,7 +172,7 @@ export default function BookingScreen() {
           font-semibold
         "
       >
-        Fuel Type
+        Select Fuel Type
       </Text>
 
       <View
@@ -90,132 +182,87 @@ export default function BookingScreen() {
         "
       >
 
-        <Pressable
-          onPress={() =>
-            setFuelType(
-              "PETROL"
-            )
-          }
+        {fuelTypes.map(
+          (fuel) => (
 
-          className={`
-            flex-1
-            rounded-2xl
-            p-4
+          <Pressable
+            key={fuel.id}
 
-            ${
-              fuelType ===
-              "PETROL"
-
-                ? "bg-primary"
-
-                : "bg-gray-200"
+            onPress={() =>
+              setFuelTypeId(
+                fuel.id
+              )
             }
-          `}
-        >
 
-          <Text
             className={`
-              text-center
-              font-bold
+              rounded-2xl
+              border
+              px-5
+              py-4
 
               ${
-                fuelType ===
-                "PETROL"
-
-                  ? "text-white"
-
-                  : "text-black"
+                fuelTypeId === fuel.id
+                  ? "bg-primary border-primary"
+                  : "border-gray-300"
               }
             `}
           >
-            Petrol
-          </Text>
 
-        </Pressable>
+            <Text
+              className={`
+                ${
+                  fuelTypeId === fuel.id
+                    ? "text-white"
+                    : "text-black"
+                }
+              `}
+            >
+              {fuel.name}
+            </Text>
 
-        <Pressable
-          onPress={() =>
-            setFuelType(
-              "DIESEL"
-            )
-          }
+          </Pressable>
 
-          className={`
-            flex-1
-            rounded-2xl
-            p-4
-
-            ${
-              fuelType ===
-              "DIESEL"
-
-                ? "bg-primary"
-
-                : "bg-gray-200"
-            }
-          `}
-        >
-
-          <Text
-            className={`
-              text-center
-              font-bold
-
-              ${
-                fuelType ===
-                "DIESEL"
-
-                  ? "text-white"
-
-                  : "text-black"
-              }
-            `}
-          >
-            Diesel
-          </Text>
-
-        </Pressable>
-
+        ))}
       </View>
 
-      {/* Quantity */}
+      {/* PLATE NUMBER */}
 
       <Text
         className="
-          mt-8
+          mt-10
           mb-3
           text-lg
           font-semibold
         "
       >
-        Quantity
+        Plate Number
       </Text>
 
       <TextInput
-        placeholder="Enter liters"
-
-        value={quantity}
+        value={plateNumber}
 
         onChangeText={
-          setQuantity
+          setPlateNumber
         }
 
-        keyboardType="numeric"
+        placeholder="AA-12345"
 
         className="
           h-14
           rounded-2xl
           border
           border-gray-300
-          bg-white
           px-4
+          text-base
         "
       />
 
-      {/* Submit */}
+      {/* BUTTON */}
 
       <Pressable
-        onPress={handleBooking}
+        onPress={
+          handleBooking
+        }
 
         className="
           mt-10
@@ -227,15 +274,25 @@ export default function BookingScreen() {
         "
       >
 
-        <Text
-          className="
-            text-lg
-            font-bold
-            text-white
-          "
-        >
-          Confirm Booking
-        </Text>
+        {loading ? (
+
+          <ActivityIndicator
+            color="white"
+          />
+
+        ) : (
+
+          <Text
+            className="
+              text-lg
+              font-bold
+              text-white
+            "
+          >
+            Confirm Booking
+          </Text>
+
+        )}
 
       </Pressable>
 

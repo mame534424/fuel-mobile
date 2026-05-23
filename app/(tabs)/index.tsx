@@ -13,6 +13,7 @@ import { useStationDetails } from "@/features/maps/hooks/useStationDetails";
 import { router } from "expo-router";
 import { useAuthStore} from "@/features/auth/stores/auth.stores";
 import {useBookingStore} from "@/features/booking/stores/booking.store";
+import { useStationStore } from "@/features/maps/stores/station.stores";
 
 export default function MapScreen() {
   const { location, loading } = useUserLocation();
@@ -28,7 +29,11 @@ const setPendingStation =
     (state) =>
       state.setPendingStation
   );
-
+const setStationDetails =
+  useStationStore(
+    (state) =>
+      state.setStationDetails
+  );
 
   const { stations } = useNearbyStations(
     location?.latitude,
@@ -45,8 +50,9 @@ const setPendingStation =
       if (!stationDetails?.stationId) {
         return;
       }
+      setStationDetails(stationDetails);
 
-    if (!user) {
+      if (!user) {
 
     setPendingStation(
       stationDetails?.stationId
@@ -60,7 +66,7 @@ const setPendingStation =
   }
 
   router.push(
-    `/booking/${stationDetails?.stationId}`
+    `/booking/${stationDetails?.stationId}`// by using uselocalparams in booking screen we can access 
   );
 };
 
