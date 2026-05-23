@@ -3,16 +3,31 @@ import {
   Text,
   Pressable,
   ActivityIndicator,
-  TextInput,
 } from "react-native";
-
-import {
-  useState,
-} from "react";
 
 import {
   router,
 } from "expo-router";
+
+import {
+  useState,useEffect,
+} from "react";
+
+import {
+  useForm,
+  Controller,
+} from "react-hook-form";
+
+import {
+  zodResolver,
+} from "@hookform/resolvers/zod";
+
+import {
+  bookingSchema,
+} from "@/features/booking/validation/booking.schema";
+
+import TextInputField
+from "@/components/ui/TextInputField";
 
 import {
   useAuthStore,
@@ -33,52 +48,53 @@ export default function BookingScreen() {
   const [loading, setLoading] =
     useState(false);
 
-  const [plateNumber, setPlateNumber] =
-    useState("");
-
-  const [fuelTypeId, setFuelTypeId] =
-    useState("");
-
   const { user } =
     useAuthStore();
-  
-  const params = useLocalSearchParams();
-
 
   const {
     stationDetails,
     clearStationDetails,
   } = useStationStore();
 
-  const fuelTypes = stationDetails?.fuels
+  const params = useLocalSearchParams();
   const stationId = params.stationId as string;
-  if (!stationDetails || stationDetails.stationId !== stationId) {
   
-    router.replace("/");}
 
 
-  const handleBooking =
-    async () => {
+  const {
+    control,
+    handleSubmit,
+    setValue,
+
+    formState: {
+      errors,
+    },
+
+    watch,
+
+  } = useForm({
+
+    resolver:
+      zodResolver(
+        bookingSchema
+      ),
+
+    defaultValues: {
+
+      plateNumber: "",
+
+      fuelTypeId:
+        undefined,
+    },
+  });
+
+  const selectedFuel =
+    watch("fuelTypeId");
+
+  const onSubmit =
+    async (data:any) => {
 
       if (!stationDetails) {
-        return;
-      }
-
-      if (!fuelTypeId) {
-
-        console.log(
-          "Select fuel type"
-        );
-
-        return;
-      }
-
-      if (!plateNumber) {
-
-        console.log(
-          "Enter plate number"
-        );
-
         return;
       }
 
@@ -89,11 +105,14 @@ export default function BookingScreen() {
         const payload = {
 
           stationId:
-            stationDetails.stationId,
+            stationDetails
+              .stationId,
 
-          fuelTypeId,
+          fuelTypeId:
+            data.fuelTypeId,
 
-          plateNumber,
+          plateNumber:
+            data.plateNumber,
 
           userId:
             user?.id,
@@ -101,10 +120,9 @@ export default function BookingScreen() {
 
         console.log(payload);
 
-        const response =
-          await createBooking(
-            payload
-          );
+        await createBooking(
+          payload
+        );
 
         clearStationDetails();
 
@@ -122,52 +140,58 @@ export default function BookingScreen() {
 
       }
   };
+  
+  useEffect(() => {
+
+  if (!stationDetails || stationDetails.stationId !== stationId) {
+  
+    router.replace("/");
+  }
+
+}, [stationDetails]);// these should redirect into stats 
 
   return (
 
     <View
       className="
         flex-1
-        bg-white
+        bg-background
         px-6
         pt-20
       "
     >
 
-      {/* TITLE */}
+      {/* HEADER */}
 
       <Text
         className="
           text-3xl
           font-bold
+          text-primary
         "
       >
         Station Booking
       </Text>
 
-      {/* STATION NAME */}
-
       <Text
         className="
           mt-3
           text-lg
-          text-gray-600
+          text-gray-500
         "
       >
-        Station:
-        {" "}
         {
           stationDetails
             ?.stationName
         }
       </Text>
 
-      {/* FUEL TYPE */}
+      {/* FUEL TYPES */}
 
       <Text
         className="
           mt-10
-          mb-3
+          mb-4
           text-lg
           font-semibold
         "
@@ -178,19 +202,24 @@ export default function BookingScreen() {
       <View
         className="
           flex-row
+          flex-wrap
           gap-3
         "
       >
 
-        {fuelTypes.map(
+        {stationDetails?.fuels.map(
           (fuel) => (
 
           <Pressable
-            key={fuel.id}
+
+            key={
+              fuel.fuelTypeId
+            }
 
             onPress={() =>
-              setFuelTypeId(
-                fuel.id
+              setValue(
+                "fuelTypeId",
+                fuel.fuelTypeId
               )
             }
 
@@ -201,23 +230,33 @@ export default function BookingScreen() {
               py-4
 
               ${
-                fuelTypeId === fuel.id
-                  ? "bg-primary border-primary"
-                  : "border-gray-300"
+                selectedFuel ===
+                fuel.fuelTypeId
+
+                ? "border-primary bg-primary"
+
+                : "border-gray-300 bg-white"
               }
             `}
           >
 
             <Text
               className={`
+                font-semibold
+
                 ${
-                  fuelTypeId === fuel.id
-                    ? "text-white"
-                    : "text-black"
+                  selectedFuel ===
+                  fuel.fuelTypeId
+
+                  ? "text-white"
+
+                  : "text-black"
                 }
               `}
             >
-              {fuel.name}
+              {
+                fuel.fuelTypeName
+              }
             </Text>
 
           </Pressable>
@@ -225,43 +264,73 @@ export default function BookingScreen() {
         ))}
       </View>
 
+      {/* FUEL ERROR */}
+
+      {errors.fuelTypeId && (
+
+        <Text
+          className="
+            mt-2
+            text-red-500
+          "
+        >
+          {
+            errors
+              .fuelTypeId
+              .message
+          }
+        </Text>
+
+      )}
+
       {/* PLATE NUMBER */}
 
-      <Text
-        className="
-          mt-10
-          mb-3
-          text-lg
-          font-semibold
-        "
+      <View
+        className="mt-8"
       >
-        Plate Number
-      </Text>
 
-      <TextInput
-        value={plateNumber}
+        <Controller
+          control={control}
 
-        onChangeText={
-          setPlateNumber
-        }
+          name="plateNumber"
 
-        placeholder="AA-12345"
+          render={({
 
-        className="
-          h-14
-          rounded-2xl
-          border
-          border-gray-300
-          px-4
-          text-base
-        "
-      />
+            field: {
+              onChange,
+              value,
+            },
+
+          }) => (
+
+            <TextInputField
+
+              label="Plate Number"
+
+              value={value}
+
+              onChange={onChange}
+
+              error={
+                errors
+                  .plateNumber
+                  ?.message
+              }
+            />
+
+          )}
+        />
+
+      </View>
 
       {/* BUTTON */}
 
       <Pressable
+
         onPress={
-          handleBooking
+          handleSubmit(
+            onSubmit
+          )
         }
 
         className="

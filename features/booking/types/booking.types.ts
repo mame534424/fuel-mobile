@@ -2,7 +2,7 @@
 
 export interface CreateBookingPayload {
 
-  stationId: number;
+  stationId: string;
 
   fuelTypeId: string;
 
