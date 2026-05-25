@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  Pressable,
 } from "react-native";
 
 import {
@@ -15,6 +14,10 @@ import {
 import {
   useAuthStore,
 } from "@/features/auth/stores/auth.stores";
+import AnimatedScreen from "@/components/ui/AnimatedScreen";
+import AppHeader from "@/components/ui/AppHeader";
+import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function ProfileScreen() {
 
@@ -52,46 +55,37 @@ export default function ProfileScreen() {
   }
 
   return (
+    <View className="flex-1 bg-[#f4fbf7] px-5 pt-14">
+      <AppHeader title="Profile" subtitle="Your account and access settings" />
 
-    <View
-      className="
-        flex-1
-        items-center
-        justify-center
-      "
-    >
+      <AnimatedScreen className="flex-1">
+        <View className="rounded-[34px] bg-white p-5 shadow-sm">
+          <View className="items-center">
+            <View className="h-20 w-20 items-center justify-center rounded-full bg-emerald-100">
+              <Ionicons name="person" size={34} color="#0f7a47" />
+            </View>
+            <Text className="mt-4 text-2xl font-black text-emerald-950">
+              {user.username}
+            </Text>
+            <Text className="mt-1 text-sm text-emerald-700">{user.email}</Text>
+          </View>
 
-      <Text
-        className="
-          text-2xl
-          font-bold
-        "
-      >
-        {user.email}
-      </Text>
+          <View className="mt-6 gap-3 rounded-3xl bg-emerald-50 p-4">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-sm text-emerald-700">Role</Text>
+              <Text className="text-sm font-semibold text-emerald-950">{user.role}</Text>
+            </View>
+            <View className="flex-row items-center justify-between">
+              <Text className="text-sm text-emerald-700">Account status</Text>
+              <Text className="text-sm font-semibold text-emerald-950">{user.isActive ? "Active" : "Inactive"}</Text>
+            </View>
+          </View>
 
-      <Pressable
-        onPress={logout}
-
-        className="
-          mt-5
-          rounded-2xl
-          bg-red-500
-          px-6
-          py-4
-        "
-      >
-
-        <Text
-          className="
-            text-white
-          "
-        >
-          Logout
-        </Text>
-
-      </Pressable>
-
+          <View className="mt-6">
+            <PrimaryActionButton title="Logout" onPress={logout} tone="ghost" />
+          </View>
+        </View>
+      </AnimatedScreen>
     </View>
   );
 }

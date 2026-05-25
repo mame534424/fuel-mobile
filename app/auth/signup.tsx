@@ -2,7 +2,7 @@ import {
   View,
   Text,
   Pressable,
-  ActivityIndicator,
+  ScrollView,
 } from "react-native";
 
 import { router } from "expo-router";
@@ -25,6 +25,9 @@ from "@/features/auth/services/auth.service";
 
 import TextInputField
 from "@/components/ui/TextInputField";
+import AnimatedScreen from "@/components/ui/AnimatedScreen";
+import AppHeader from "@/components/ui/AppHeader";
+import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
 
 export default function SignupScreen() {
 
@@ -98,208 +101,100 @@ export default function SignupScreen() {
   };
 
   return (
+    <View className="flex-1 bg-[#f4fbf7]">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+        <View className="flex-1 px-5 pt-14">
+          <AppHeader title="Create account" subtitle="Join Fuel to book and track stations" onBack={() => router.back()} />
 
-    <View
-      className="
-        flex-1
-        justify-center
-        bg-background
-        px-6
-      "
-    >
+          <AnimatedScreen className="flex-1 justify-between">
+            <View className="rounded-[34px] bg-white p-5 shadow-sm">
+              <Text className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-700">
+                One-time setup
+              </Text>
+              <Text className="mt-2 text-3xl font-black text-emerald-950">
+                Set up your profile in minutes
+              </Text>
+              <Text className="mt-2 text-sm leading-5 text-emerald-700">
+                Create your account to save bookings and keep your status live across devices.
+              </Text>
 
-      <Text
-        className="
-          mb-10
-          text-4xl
-          font-bold
-          text-primary
-        "
-      >
-        Create Account
-      </Text>
+              <View className="mt-6">
+                <Controller
+                  control={control}
+                  name="email"
+                  render={({ field: { onChange, value } }) => (
+                    <TextInputField
+                      label="Email"
+                      value={value}
+                      onChange={onChange}
+                      placeholder="name@example.com"
+                      autoCapitalize="none"
+                      textContentType="emailAddress"
+                      error={errors.email?.message}
+                    />
+                  )}
+                />
 
-      {/* EMAIL */}
+                <Controller
+                  control={control}
+                  name="username"
+                  render={({ field: { onChange, value } }) => (
+                    <TextInputField
+                      label="Username"
+                      value={value}
+                      onChange={onChange}
+                      placeholder="your username"
+                      autoCapitalize="none"
+                      textContentType="username"
+                      error={errors.username?.message}
+                    />
+                  )}
+                />
 
-      <Controller
-        control={control}
-        name="email"
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field: { onChange, value } }) => (
+                    <TextInputField
+                      label="Password"
+                      value={value}
+                      onChange={onChange}
+                      placeholder="Create a password"
+                      secureTextEntry
+                      textContentType="newPassword"
+                      error={errors.password?.message}
+                    />
+                  )}
+                />
 
-        render={({
-          field: {
-            onChange,
-            value,
-          },
-        }) => (
+                <Controller
+                  control={control}
+                  name="confirmPassword"
+                  render={({ field: { onChange, value } }) => (
+                    <TextInputField
+                      label="Confirm password"
+                      value={value}
+                      onChange={onChange}
+                      placeholder="Repeat your password"
+                      secureTextEntry
+                      textContentType="newPassword"
+                      error={errors.confirmPassword?.message}
+                    />
+                  )}
+                />
+              </View>
 
-          <TextInputField
-            label="Email"
+              <PrimaryActionButton title="Sign up" onPress={handleSubmit(onSubmit)} loading={loading} />
+            </View>
 
-            value={value}
-
-            onChange={onChange}
-
-            error={
-              errors.email?.message
-            }
-          />
-
-        )}
-      />
-
-      {/* USERNAME */}
-
-      <Controller
-        control={control}
-        name="username"
-
-        render={({
-          field: {
-            onChange,
-            value,
-          },
-        }) => (
-
-          <TextInputField
-            label="Username"
-
-            value={value}
-
-            onChange={onChange}
-
-            error={
-              errors.username?.message
-            }
-          />
-
-        )}
-      />
-
-      {/* PASSWORD */}
-
-      <Controller
-        control={control}
-        name="password"
-
-        render={({
-          field: {
-            onChange,
-            value,
-          },
-        }) => (
-
-          <TextInputField
-            label="Password"
-
-            value={value}
-
-            onChange={onChange}
-
-            secureTextEntry
-
-            error={
-              errors.password?.message
-            }
-          />
-
-        )}
-      />
-
-      {/* CONFIRM PASSWORD */}
-
-      <Controller
-        control={control}
-        name="confirmPassword"
-
-        render={({
-          field: {
-            onChange,
-            value,
-          },
-        }) => (
-
-          <TextInputField
-            label="Confirm Password"
-
-            value={value}
-
-            onChange={onChange}
-
-            secureTextEntry
-
-            error={
-              errors
-                .confirmPassword
-                ?.message
-            }
-          />
-
-        )}
-      />
-
-      {/* BUTTON */}
-
-      <Pressable
-        onPress={
-          handleSubmit(
-            onSubmit
-          )
-        }
-
-        className="
-          mt-5
-          h-14
-          items-center
-          justify-center
-          rounded-2xl
-          bg-primary
-        "
-      >
-
-        {loading ? (
-
-          <ActivityIndicator
-            color="white"
-          />
-
-        ) : (
-
-          <Text
-            className="
-              text-lg
-              font-bold
-              text-white
-            "
-          >
-            Sign Up
-          </Text>
-
-        )}
-
-      </Pressable>
-
-      {/* LOGIN LINK */}
-
-      <Pressable
-        onPress={() =>
-          router.back()
-        }
-
-        className="mt-5"
-      >
-
-        <Text
-          className="
-            text-center
-            text-gray-500
-          "
-        >
-          Already have account?
-          Login
-        </Text>
-
-      </Pressable>
-
+            <View className="pb-6 pt-4">
+              <Pressable onPress={() => router.back()} className="items-center rounded-2xl border border-emerald-200 bg-white py-4">
+                <Text className="text-base font-semibold text-emerald-900">Already have an account? Login</Text>
+              </Pressable>
+            </View>
+          </AnimatedScreen>
+        </View>
+      </ScrollView>
     </View>
   );
 }

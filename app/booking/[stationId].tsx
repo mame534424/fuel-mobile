@@ -3,10 +3,12 @@ import {
   Text,
   Pressable,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 
 import {
   router,
+  useLocalSearchParams,
 } from "expo-router";
 
 import {
@@ -41,7 +43,10 @@ import {
   createBooking,
 } from "@/features/booking/services/booking.service";
 
-import { useLocalSearchParams } from "expo-router";
+import AnimatedScreen from "@/components/ui/AnimatedScreen";
+import AppHeader from "@/components/ui/AppHeader";
+import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function BookingScreen() {
 
@@ -91,6 +96,11 @@ export default function BookingScreen() {
   const selectedFuel =
     watch("fuelTypeId");
 
+  const selectedFuelLabel =
+    stationDetails?.fuels.find(
+      (fuel) => fuel.fuelTypeId === selectedFuel
+    )?.fuelTypeName;
+
   const onSubmit =
     async (data:any) => {
 
@@ -118,17 +128,34 @@ export default function BookingScreen() {
             user?.id,
         };
 
-        console.log(payload);
-
-        await createBooking(
+        const response = await createBooking(
           payload
         );
 
         clearStationDetails();
 
-        router.replace(
-          "/status"
-        );
+        router.push({
+          pathname: "/booking/confirmation",
+          params: {
+            stationName: stationDetails.stationName,
+            bookingNumber:
+              response?.booking?.bookingNumber ??
+              response?.bookingNumber ??
+              "",
+            queueNumber: String(
+              response?.booking?.queueNumber ??
+              response?.queueNumber ??
+              stationDetails.bookings?.[0]?.count ??
+              "0"
+            ),
+            plateNumber: data.plateNumber,
+            fuelType: selectedFuelLabel ?? "",
+            status:
+              response?.booking?.status ??
+              response?.status ??
+              "PENDING",
+          },
+        });
 
       } catch (error) {
 
@@ -148,223 +175,138 @@ export default function BookingScreen() {
     router.replace("/");
   }
 
-}, [stationDetails]);// these should redirect into stats 
+}, [stationDetails, stationId]);
+
+  if (!stationDetails || stationDetails.stationId !== stationId) {
+    return (
+      <View className="flex-1 items-center justify-center bg-[#f4fbf7]">
+        <ActivityIndicator color="#0f7a47" />
+      </View>
+    );
+  }
 
   return (
-
-    <View
-      className="
-        flex-1
-        bg-background
-        px-6
-        pt-20
-      "
-    >
-
-      {/* HEADER */}
-
-      <Text
-        className="
-          text-3xl
-          font-bold
-          text-primary
-        "
-      >
-        Station Booking
-      </Text>
-
-      <Text
-        className="
-          mt-3
-          text-lg
-          text-gray-500
-        "
-      >
-        {
-          stationDetails
-            ?.stationName
-        }
-      </Text>
-
-      {/* FUEL TYPES */}
-
-      <Text
-        className="
-          mt-10
-          mb-4
-          text-lg
-          font-semibold
-        "
-      >
-        Select Fuel Type
-      </Text>
-
-      <View
-        className="
-          flex-row
-          flex-wrap
-          gap-3
-        "
-      >
-
-        {stationDetails?.fuels.map(
-          (fuel) => (
-
-          <Pressable
-
-            key={
-              fuel.fuelTypeId
-            }
-
-            onPress={() =>
-              setValue(
-                "fuelTypeId",
-                fuel.fuelTypeId
-              )
-            }
-
-            className={`
-              rounded-2xl
-              border
-              px-5
-              py-4
-
-              ${
-                selectedFuel ===
-                fuel.fuelTypeId
-
-                ? "border-primary bg-primary"
-
-                : "border-gray-300 bg-white"
-              }
-            `}
-          >
-
-            <Text
-              className={`
-                font-semibold
-
-                ${
-                  selectedFuel ===
-                  fuel.fuelTypeId
-
-                  ? "text-white"
-
-                  : "text-black"
-                }
-              `}
-            >
-              {
-                fuel.fuelTypeName
-              }
-            </Text>
-
-          </Pressable>
-
-        ))}
-      </View>
-
-      {/* FUEL ERROR */}
-
-      {errors.fuelTypeId && (
-
-        <Text
-          className="
-            mt-2
-            text-red-500
-          "
-        >
-          {
-            errors
-              .fuelTypeId
-              .message
-          }
-        </Text>
-
-      )}
-
-      {/* PLATE NUMBER */}
-
-      <View
-        className="mt-8"
-      >
-
-        <Controller
-          control={control}
-
-          name="plateNumber"
-
-          render={({
-
-            field: {
-              onChange,
-              value,
-            },
-
-          }) => (
-
-            <TextInputField
-
-              label="Plate Number"
-
-              value={value}
-
-              onChange={onChange}
-
-              error={
-                errors
-                  .plateNumber
-                  ?.message
-              }
-            />
-
-          )}
-        />
-
-      </View>
-
-      {/* BUTTON */}
-
-      <Pressable
-
-        onPress={
-          handleSubmit(
-            onSubmit
-          )
-        }
-
-        className="
-          mt-10
-          h-14
-          items-center
-          justify-center
-          rounded-2xl
-          bg-primary
-        "
-      >
-
-        {loading ? (
-
-          <ActivityIndicator
-            color="white"
+    <View className="flex-1 bg-[#f4fbf7]">
+      <ScrollView contentContainerStyle={{ paddingBottom: 28 }} showsVerticalScrollIndicator={false}>
+        <View className="px-5 pt-14">
+          <AppHeader
+            title="Station booking"
+            subtitle={stationDetails.stationName}
+            onBack={() => router.back()}
           />
 
-        ) : (
+          <AnimatedScreen>
+            <View className="rounded-[32px] bg-emerald-950 p-5">
+              <View className="flex-row items-center justify-between">
+                <View className="flex-1 pr-4">
+                  <Text className="text-xs uppercase tracking-[0.22em] text-emerald-200">
+                    Booking summary
+                  </Text>
+                  <Text className="mt-2 text-2xl font-black text-white">
+                    Reserve fuel in seconds
+                  </Text>
+                  <Text className="mt-2 text-sm leading-5 text-emerald-100">
+                    Choose your fuel type and plate number to lock your place in the queue.
+                  </Text>
+                </View>
+                <View className="h-16 w-16 items-center justify-center rounded-3xl bg-white/10">
+                  <Ionicons name="card" size={28} color="#d1fae5" />
+                </View>
+              </View>
 
-          <Text
-            className="
-              text-lg
-              font-bold
-              text-white
-            "
-          >
-            Confirm Booking
-          </Text>
+              <View className="mt-4 flex-row gap-3">
+                <View className="flex-1 rounded-2xl bg-white/10 p-4">
+                  <Text className="text-xs uppercase tracking-[0.18em] text-emerald-200">
+                    Queue
+                  </Text>
+                  <Text className="mt-2 text-2xl font-black text-white">
+                    {stationDetails.bookings?.[0]?.count ?? "0"}
+                  </Text>
+                </View>
+                <View className="flex-1 rounded-2xl bg-white/10 p-4">
+                  <Text className="text-xs uppercase tracking-[0.18em] text-emerald-200">
+                    Fuel options
+                  </Text>
+                  <Text className="mt-2 text-2xl font-black text-white">
+                    {stationDetails.fuels.length}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </AnimatedScreen>
 
-        )}
+          <AnimatedScreen delay={80}>
+            <Text className="mb-3 mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">
+              Select fuel type
+            </Text>
 
-      </Pressable>
+            <View className="flex-row flex-wrap gap-3">
+              {stationDetails.fuels.map((fuel) => (
+                <Pressable
+                  key={fuel.fuelTypeId}
+                  onPress={() =>
+                    setValue(
+                      "fuelTypeId",
+                      fuel.fuelTypeId
+                    )
+                  }
+                  className={`min-w-[44%] flex-1 rounded-3xl border px-4 py-4 ${
+                    selectedFuel === fuel.fuelTypeId
+                      ? "border-emerald-700 bg-emerald-700"
+                      : "border-emerald-100 bg-white/95"
+                  }`}
+                >
+                  <Text
+                    className={`text-base font-bold ${
+                      selectedFuel === fuel.fuelTypeId ? "text-white" : "text-emerald-950"
+                    }`}
+                  >
+                    {fuel.fuelTypeName}
+                  </Text>
+                  <Text className={`mt-2 text-sm ${selectedFuel === fuel.fuelTypeId ? "text-emerald-100" : "text-emerald-700"}`}>
+                    {fuel.quantity} L available
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
 
+            {errors.fuelTypeId ? (
+              <Text className="mt-2 text-sm text-red-600">{errors.fuelTypeId.message}</Text>
+            ) : null}
+          </AnimatedScreen>
+
+          <AnimatedScreen delay={140}>
+            <View className="mt-6">
+              <Controller
+                control={control}
+                name="plateNumber"
+                render={({ field: { onChange, value } }) => (
+                  <TextInputField
+                    label="Plate number"
+                    value={value}
+                    onChange={onChange}
+                    placeholder="Enter your vehicle plate"
+                    autoCapitalize="characters"
+                    textContentType="none"
+                    error={errors.plateNumber?.message}
+                  />
+                )}
+              />
+            </View>
+          </AnimatedScreen>
+
+          <AnimatedScreen delay={200}>
+            <View className="mt-3">
+              <PrimaryActionButton
+                title="Confirm booking"
+                onPress={handleSubmit(onSubmit)}
+                loading={loading}
+                disabled={!selectedFuel}
+              />
+            </View>
+          </AnimatedScreen>
+        </View>
+      </ScrollView>
     </View>
   );
 }

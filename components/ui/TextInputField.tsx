@@ -2,9 +2,10 @@ import {
   View,
   Text,
   TextInput,
+  TextInputProps,
 } from "react-native";
 
-interface Props {
+type Props = Omit<TextInputProps, "value" | "onChange" | "onChangeText"> & {
 
   label: string;
 
@@ -25,6 +26,10 @@ export default function TextInputField({
   onChange,
   secureTextEntry,
   error,
+  placeholder,
+  autoCapitalize,
+  keyboardType,
+  textContentType,
 }: Props) {
 
   return (
@@ -35,7 +40,7 @@ export default function TextInputField({
           mb-2
           text-sm
           font-semibold
-          text-gray-600
+          text-emerald-900
         "
       >
         {label}
@@ -47,15 +52,21 @@ export default function TextInputField({
         secureTextEntry={
           secureTextEntry
         }
+        placeholder={placeholder}
+        autoCapitalize={autoCapitalize}
+        keyboardType={keyboardType}
+        textContentType={textContentType}
+        placeholderTextColor="#8ca08f"
+        selectionColor="#0f7a47"
 
         className="
           h-14
           rounded-2xl
-          border
-          border-gray-300
-          bg-white
+          border border-emerald-100
+          bg-white/95
           px-4
           text-base
+          text-emerald-950
         "
       />
 
@@ -63,7 +74,8 @@ export default function TextInputField({
         <Text
           className="
             mt-1
-            text-red-500
+            text-sm
+            text-red-600
           "
         >
           {error}

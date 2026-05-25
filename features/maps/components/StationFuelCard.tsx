@@ -15,24 +15,27 @@ export default function StationFuelCard({
     <View
       className="
         mb-3
-        rounded-2xl
-        bg-white
+        rounded-3xl
+        border border-emerald-100
+        bg-white/95
         p-4
       "
     >
       <Text
         className="
-          text-lg
+          text-base
           font-bold
+          text-emerald-950
         "
       >
-        ⛽ {type}
+        {type}
       </Text>
 
       <Text
         className="
           mt-2
-          text-gray-600
+          text-sm
+          text-emerald-700
         "
       >
         {availableFuel} L available
