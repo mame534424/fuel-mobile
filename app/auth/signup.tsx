@@ -3,6 +3,8 @@ import {
   Text,
   Pressable,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 
 import { router } from "expo-router";
@@ -28,6 +30,7 @@ from "@/components/ui/TextInputField";
 import AnimatedScreen from "@/components/ui/AnimatedScreen";
 import AppHeader from "@/components/ui/AppHeader";
 import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SignupScreen() {
 
@@ -101,9 +104,16 @@ export default function SignupScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#f4fbf7]">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <View className="flex-1 px-5 pt-14">
+    <SafeAreaView className="flex-1 bg-[#f4fbf7]" edges={["top", "left", "right", "bottom"]}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.select({ ios: "padding", android: undefined })}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="flex-1 px-5 pt-4">
           <AppHeader title="Create account" subtitle="Join Fuel to book and track stations" onBack={() => router.back()} />
 
           <AnimatedScreen className="flex-1 justify-between">
@@ -194,7 +204,8 @@ export default function SignupScreen() {
             </View>
           </AnimatedScreen>
         </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

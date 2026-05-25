@@ -3,6 +3,9 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import AnimatedScreen from "@/components/ui/AnimatedScreen";
 import AppHeader from "@/components/ui/AppHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useStationStore } from "@/features/maps/stores/station.stores";
+import { useEffect } from "react";
 
 export default function BookingConfirmationScreen() {
   const params = useLocalSearchParams<{
@@ -13,6 +16,10 @@ export default function BookingConfirmationScreen() {
     fuelType?: string;
     status?: string;
   }>();
+  const {
+      stationDetails,
+      clearStationDetails,
+    } = useStationStore();
 
   const details = [
     { label: "Station", value: params.stationName ?? "Your selected station" },
@@ -20,9 +27,16 @@ export default function BookingConfirmationScreen() {
     { label: "Plate", value: params.plateNumber ?? "Not provided" },
     { label: "Queue", value: params.queueNumber ? `#${params.queueNumber}` : "Pending" },
   ];
+  useEffect(() => {
+    return () => {
+        clearStationDetails();
+    }
+    }, [])
+    
 
   return (
-    <View className="flex-1 bg-[#f4fbf7] px-5 pt-14">
+    <SafeAreaView className="flex-1 bg-[#f4fbf7]" edges={["top", "left", "right", "bottom"]}>
+    <View className="flex-1 bg-[#f4fbf7] px-5 pt-4">
       <AppHeader title="Booking confirmed" subtitle="Your place is secured" onBack={() => router.back()} />
 
       <AnimatedScreen className="mt-4 flex-1">
@@ -80,5 +94,6 @@ export default function BookingConfirmationScreen() {
         </View>
       </AnimatedScreen>
     </View>
+    </SafeAreaView>
   );
 }

@@ -18,6 +18,7 @@ import AnimatedScreen from "@/components/ui/AnimatedScreen";
 import AppHeader from "@/components/ui/AppHeader";
 import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
 
@@ -55,7 +56,8 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View className="flex-1 bg-[#f4fbf7] px-5 pt-14">
+    <SafeAreaView className="flex-1 bg-[#f4fbf7]" edges={["top", "left", "right", "bottom"]}>
+    <View className="flex-1 bg-[#f4fbf7] px-5 pt-4">
       <AppHeader title="Profile" subtitle="Your account and access settings" />
 
       <AnimatedScreen className="flex-1">
@@ -87,5 +89,6 @@ export default function ProfileScreen() {
         </View>
       </AnimatedScreen>
     </View>
+    </SafeAreaView>
   );
 }

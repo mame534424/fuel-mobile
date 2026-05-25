@@ -10,6 +10,7 @@ import AppHeader from "@/components/ui/AppHeader";
 import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function StatusScreen() {
   const [booking, setBooking] = useState<any>(null);
@@ -72,7 +73,7 @@ export default function StatusScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#f4fbf7] px-6">
+      <SafeAreaView className="flex-1 items-center justify-center bg-[#f4fbf7] px-6" edges={["top", "left", "right", "bottom"]}>
         <AnimatedScreen className="w-full max-w-md rounded-[32px] border border-emerald-100 bg-white p-6 shadow-sm">
           <View className="items-center">
             <View className="h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
@@ -86,13 +87,13 @@ export default function StatusScreen() {
             </Text>
           </View>
         </AnimatedScreen>
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (!booking) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#f4fbf7] px-6">
+      <SafeAreaView className="flex-1 items-center justify-center bg-[#f4fbf7] px-6" edges={["top", "left", "right", "bottom"]}>
         <AnimatedScreen className="w-full max-w-md rounded-[32px] border border-emerald-100 bg-white p-6 shadow-sm">
           <View className="items-center">
             <View className="h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
@@ -108,12 +109,13 @@ export default function StatusScreen() {
             <PrimaryActionButton title="Open map" onPress={() => router.replace("/")} />
           </View>
         </AnimatedScreen>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-[#f4fbf7] px-5 pt-14">
+    <SafeAreaView className="flex-1 bg-[#f4fbf7]" edges={["top", "left", "right", "bottom"]}>
+    <View className="flex-1 bg-[#f4fbf7] px-5 pt-4">
       <AppHeader title="My booking" subtitle="Live queue and status updates" />
 
       <AnimatedScreen className="flex-1">
@@ -150,5 +152,6 @@ export default function StatusScreen() {
         </View>
       </AnimatedScreen>
     </View>
+    </SafeAreaView>
   );
 }

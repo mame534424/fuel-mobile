@@ -4,6 +4,8 @@ import {
   Pressable,
   ActivityIndicator,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 
 import {
@@ -47,6 +49,7 @@ import AnimatedScreen from "@/components/ui/AnimatedScreen";
 import AppHeader from "@/components/ui/AppHeader";
 import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BookingScreen() {
 
@@ -132,7 +135,7 @@ export default function BookingScreen() {
           payload
         );
 
-        clearStationDetails();
+        // clearStationDetails();
 
         router.push({
           pathname: "/booking/confirmation",
@@ -186,9 +189,17 @@ export default function BookingScreen() {
   }
 
   return (
-    <View className="flex-1 bg-[#f4fbf7]">
-      <ScrollView contentContainerStyle={{ paddingBottom: 28 }} showsVerticalScrollIndicator={false}>
-        <View className="px-5 pt-14">
+    <SafeAreaView className="flex-1 bg-[#f4fbf7]" edges={["top", "left", "right", "bottom"]}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.select({ ios: "padding", android: undefined })}
+      >
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 28 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="px-5 pt-4">
           <AppHeader
             title="Station booking"
             subtitle={stationDetails.stationName}
@@ -306,7 +317,8 @@ export default function BookingScreen() {
             </View>
           </AnimatedScreen>
         </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

@@ -5,6 +5,7 @@ import {
   GestureHandlerRootView,
 }
 from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import ThemeProvider from "@/theme/themeProvider";
 import { useEffect } from "react";
@@ -24,6 +25,7 @@ export default function RootLayout() {
     <GestureHandlerRootView
       style={{ flex: 1 }}
     >
+      <SafeAreaProvider>
         <ThemeProvider>
         <Stack
             screenOptions={{
@@ -39,6 +41,7 @@ export default function RootLayout() {
             <Stack.Screen name="auth/signup" />
         </Stack>
         </ThemeProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
     
   );

@@ -1,4 +1,4 @@
-import {View,Text,Pressable,ScrollView} from "react-native";
+import {View,Text,Pressable,ScrollView,KeyboardAvoidingView,Platform} from "react-native";
 import { router } from "expo-router";
 import {useForm,Controller} from "react-hook-form";
 import { useState } from "react";
@@ -14,6 +14,7 @@ import { useBookingStore} from "@/features/booking/stores/booking.store";
 import AnimatedScreen from "@/components/ui/AnimatedScreen";
 import AppHeader from "@/components/ui/AppHeader";
 import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function LoginScreen() {
@@ -78,9 +79,16 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#f4fbf7]">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <View className="flex-1 px-5 pt-14">
+    <SafeAreaView className="flex-1 bg-[#f4fbf7]" edges={["top", "left", "right", "bottom"]}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.select({ ios: "padding", android: undefined })}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="flex-1 px-5 pt-4">
           <AppHeader title="Welcome back" subtitle="Sign in to continue your fuel booking" onBack={() => router.replace("/")} />
 
           <AnimatedScreen className="flex-1 justify-between">
@@ -141,7 +149,8 @@ export default function LoginScreen() {
             </View>
           </AnimatedScreen>
         </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
