@@ -11,6 +11,7 @@ import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from 'react-native-toast-message';
 
 export default function StatusScreen() {
   const [booking, setBooking] = useState<any>(null);
@@ -31,6 +32,8 @@ export default function StatusScreen() {
       socket.emit("join_booking", data.booking.id);
     } catch (error) {
       console.log(error);
+      const message = (error as any)?.response?.data?.message || (error as any)?.message || "Failed to fetch active booking";
+      Toast.show({ type: 'error', text1: 'Unable to load booking', text2: String(message) });
     } finally {
       setLoading(false);
     }

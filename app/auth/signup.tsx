@@ -31,6 +31,7 @@ import AnimatedScreen from "@/components/ui/AnimatedScreen";
 import AppHeader from "@/components/ui/AppHeader";
 import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from 'react-native-toast-message';
 
 export default function SignupScreen() {
 
@@ -94,7 +95,9 @@ export default function SignupScreen() {
 
       } catch (error) {
 
-        console.log(error);
+          console.log(error);
+          const message = (error as any)?.response?.data?.message || (error as any)?.message || "Signup failed";
+          Toast.show({ type: 'error', text1: 'Signup failed', text2: String(message) });
 
       } finally {
 

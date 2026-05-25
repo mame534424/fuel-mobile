@@ -50,7 +50,8 @@ import AppHeader from "@/components/ui/AppHeader";
 import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
+
+import Toast from 'react-native-toast-message';
 
 export default function BookingScreen() {
 
@@ -62,7 +63,6 @@ export default function BookingScreen() {
 
   const {
     stationDetails,
-    clearStationDetails,
   } = useStationStore();
 
   const params = useLocalSearchParams();
@@ -136,6 +136,9 @@ export default function BookingScreen() {
           payload
         );
 
+        const bookingNumber = response?.booking?.bookingNumber ?? response?.bookingNumber ?? "";
+        Toast.show({ type: 'success', text1: 'Booking confirmed', text2: bookingNumber ? `Ref ${bookingNumber}` : undefined });
+
         // clearStationDetails();
 
         router.push({
@@ -164,6 +167,8 @@ export default function BookingScreen() {
       } catch (error) {
 
         console.log(error);
+        const message = (error as any)?.response?.data?.message || (error as any)?.message || "Booking failed";
+        Toast.show({ type: 'error', text1: 'Booking failed', text2: String(message) });
 
       } finally {
 

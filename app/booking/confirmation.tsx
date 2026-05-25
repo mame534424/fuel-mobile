@@ -16,10 +16,7 @@ export default function BookingConfirmationScreen() {
     fuelType?: string;
     status?: string;
   }>();
-  const {
-      stationDetails,
-      clearStationDetails,
-    } = useStationStore();
+  const { clearStationDetails } = useStationStore();
 
   const details = [
     { label: "Station", value: params.stationName ?? "Your selected station" },
@@ -29,9 +26,9 @@ export default function BookingConfirmationScreen() {
   ];
   useEffect(() => {
     return () => {
-        clearStationDetails();
-    }
-    }, [])
+      clearStationDetails();
+    };
+  }, [clearStationDetails]);
     
 
   return (

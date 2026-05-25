@@ -15,6 +15,7 @@ import AnimatedScreen from "@/components/ui/AnimatedScreen";
 import AppHeader from "@/components/ui/AppHeader";
 import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from 'react-native-toast-message';
 
 
 export default function LoginScreen() {
@@ -70,6 +71,8 @@ export default function LoginScreen() {
       } catch (error) {
 
         console.log(error);
+        const message = (error as any)?.response?.data?.message || (error as any)?.message || "Invalid credentials";
+        Toast.show({ type: 'error', text1: 'Login failed', text2: String(message) });
 
       } finally {
 

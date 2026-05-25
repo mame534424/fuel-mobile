@@ -9,6 +9,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import ThemeProvider from "@/theme/themeProvider";
 import { useEffect } from "react";
+import Toast from 'react-native-toast-message';
 
 import { useAuthStore } from "@/features/auth/stores/auth.stores";
 
@@ -41,6 +42,7 @@ export default function RootLayout() {
             <Stack.Screen name="auth/signup" />
         </Stack>
         </ThemeProvider>
+        <Toast />
       </SafeAreaProvider>
     </GestureHandlerRootView>
     
