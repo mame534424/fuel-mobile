@@ -28,32 +28,22 @@ export default function ProfileScreen() {
     loading,
   } = useAuthStore();
 
-  useEffect(() => {
+  if (!loading && !user) {
+  return (
+    <SafeAreaView className="flex-1 items-center justify-center bg-[#f4fbf7]">
+      <Text className="text-lg font-semibold text-emerald-950">
+        You are not logged in
+      </Text>
 
-    if (
-      !loading &&
-      !user
-    ) {
-
-      router.replace(
-        "/auth/login"
-      );
-
-    }
-
-  }, [user, loading]);
-
-  if (loading) {
-
-    return null;
-
-  }
-
-  if (!user) {
-
-    return null;
-
-  }
+      <View className="mt-5 w-full px-5">
+        <PrimaryActionButton
+          title="Login"
+          onPress={() => router.push("/auth/login")}
+        />
+      </View>
+    </SafeAreaView>
+  );
+}
 
   return (
     <SafeAreaView className="flex-1 bg-[#f4fbf7]" edges={["top", "left", "right", "bottom"]}>
@@ -67,19 +57,19 @@ export default function ProfileScreen() {
               <Ionicons name="person" size={34} color="#0f7a47" />
             </View>
             <Text className="mt-4 text-2xl font-black text-emerald-950">
-              {user.username}
+              {user?.username}
             </Text>
-            <Text className="mt-1 text-sm text-emerald-700">{user.email}</Text>
+            <Text className="mt-1 text-sm text-emerald-700">{user?.email}</Text>
           </View>
 
           <View className="mt-6 gap-3 rounded-3xl bg-emerald-50 p-4">
             <View className="flex-row items-center justify-between">
               <Text className="text-sm text-emerald-700">Role</Text>
-              <Text className="text-sm font-semibold text-emerald-950">{user.role}</Text>
+              <Text className="text-sm font-semibold text-emerald-950">{user?.role}</Text>
             </View>
             <View className="flex-row items-center justify-between">
               <Text className="text-sm text-emerald-700">Account status</Text>
-              <Text className="text-sm font-semibold text-emerald-950">{user.isActive ? "Active" : "Inactive"}</Text>
+              <Text className="text-sm font-semibold text-emerald-950">{user?.isActive ? "Active" : "Inactive"}</Text>
             </View>
           </View>
 

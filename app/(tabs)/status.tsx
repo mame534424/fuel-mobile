@@ -22,6 +22,7 @@ export default function StatusScreen() {
       setLoading(true);
 
       const data = await getActiveBooking();
+      console.log("Active booking data:", data);
 
       setBooking({
         ...data.booking,

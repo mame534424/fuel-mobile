@@ -75,14 +75,14 @@ export default function BookingConfirmationScreen() {
 
           <View className="gap-3 pb-2">
             <Pressable
-              onPress={() => router.replace("/status")}
+              onPress={() => router.replace("/(tabs)/status")}
               className="items-center rounded-2xl bg-emerald-700 py-4"
             >
               <Text className="text-base font-bold text-white">Track status</Text>
             </Pressable>
 
             <Pressable
-              onPress={() => router.replace("/")}
+              onPress={() => router.replace("/(tabs)/status")}
               className="items-center rounded-2xl border border-emerald-200 bg-white py-4"
             >
               <Text className="text-base font-bold text-emerald-900">Done</Text>
