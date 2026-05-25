@@ -104,15 +104,26 @@ export default function SignupScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f4fbf7]" edges={["top", "left", "right", "bottom"]}>
+    <SafeAreaView
+  className="flex-1 bg-[#f4fbf7]"
+>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.select({ ios: "padding", android: undefined })}
-      >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
-          keyboardShouldPersistTaps="handled"
-        >
+  style={{ flex: 1 }}
+  behavior={
+    Platform.OS === "ios"
+      ? "padding"
+      : "height"
+  }
+>
+  <ScrollView
+    keyboardShouldPersistTaps="handled"
+    showsVerticalScrollIndicator={false}
+    contentContainerStyle={{
+      flexGrow: 1,
+      paddingBottom: 40,
+    }}
+  >
+        
           <View className="flex-1 px-5 pt-4">
           <AppHeader title="Create account" subtitle="Join Fuel to book and track stations" onBack={() => router.back()} />
 
@@ -204,7 +215,7 @@ export default function SignupScreen() {
             </View>
           </AnimatedScreen>
         </View>
-        </ScrollView>
+      </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

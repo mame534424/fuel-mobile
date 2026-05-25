@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { socket } from "@/services/socket";
 
@@ -16,31 +16,33 @@ export default function StatusScreen() {
   const [booking, setBooking] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadBooking() {
-      try {
-        const data = await getActiveBooking();
+  const loadBooking = useCallback(async () => {
+    try {
+      setLoading(true);
 
-        setBooking({
-          ...data.booking,
-          carsAhead: data.carsAhead,
-        });
+      const data = await getActiveBooking();
 
-        socket.connect();
-        socket.emit("join_booking", data.booking.id);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
+      setBooking({
+        ...data.booking,
+        carsAhead: data.carsAhead,
+      });
+
+      socket.connect();
+      socket.emit("join_booking", data.booking.id);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
+  }, []);
 
+  useEffect(() => {
     loadBooking();
 
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [loadBooking]);
 
   useEffect(() => {
     socket.on("queue_updated", (data) => {
@@ -128,6 +130,24 @@ export default function StatusScreen() {
         </View>
 
         <View className="mt-5 rounded-[30px] border border-emerald-100 bg-white p-5 shadow-sm">
+          <View className="rounded-2xl bg-emerald-50 px-4 py-4">
+            <Text className="text-xs uppercase tracking-[0.22em] text-emerald-700">
+              Booking reference
+            </Text>
+            <Text className="mt-1 text-lg font-black text-emerald-950">
+              {booking.bookingNumber ? `#${booking.bookingNumber}` : `#${booking.id}`}
+            </Text>
+          </View>
+
+          <View className="mt-3 rounded-2xl bg-emerald-50 px-4 py-4">
+            <Text className="text-xs uppercase tracking-[0.22em] text-emerald-700">
+              Vehicle plate
+            </Text>
+            <Text className="mt-1 text-lg font-black text-emerald-950">
+              {booking.plateNumber ?? "Not provided"}
+            </Text>
+          </View>
+
           <View className="flex-row items-center justify-between">
             <View>
               <Text className="text-xs uppercase tracking-[0.22em] text-emerald-700">Status</Text>
@@ -148,7 +168,7 @@ export default function StatusScreen() {
 
         <View className="mt-5 gap-3">
           <PrimaryActionButton title="Go to map" onPress={() => router.replace("/")} />
-          <PrimaryActionButton title="Refresh active booking" onPress={() => router.replace("/status")} tone="ghost" />
+          <PrimaryActionButton title="Refresh active booking" onPress={loadBooking} tone="ghost" loading={loading} />
         </View>
       </AnimatedScreen>
     </View>

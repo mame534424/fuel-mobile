@@ -3,9 +3,9 @@ import {
   Text,
   Pressable,
   ActivityIndicator,
-  ScrollView,
-  KeyboardAvoidingView,
   Platform,
+  ScrollView,
+  KeyboardAvoidingView
 } from "react-native";
 
 import {
@@ -50,6 +50,7 @@ import AppHeader from "@/components/ui/AppHeader";
 import PrimaryActionButton from "@/components/ui/PrimaryActionButton";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
 
 export default function BookingScreen() {
 
@@ -191,14 +192,21 @@ export default function BookingScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#f4fbf7]" edges={["top", "left", "right", "bottom"]}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.select({ ios: "padding", android: undefined })}
-      >
-        <ScrollView
-          contentContainerStyle={{ paddingBottom: 28 }}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
+  style={{ flex: 1 }}
+  behavior={
+    Platform.OS === "ios"
+      ? "padding"
+      : "height"
+  }
+>
+  <ScrollView
+    keyboardShouldPersistTaps="handled"
+    showsVerticalScrollIndicator={false}
+    contentContainerStyle={{
+      flexGrow: 1,
+      paddingBottom: 40,
+    }}
+  >
           <View className="px-5 pt-4">
           <AppHeader
             title="Station booking"
@@ -317,8 +325,10 @@ export default function BookingScreen() {
             </View>
           </AnimatedScreen>
         </View>
-        </ScrollView>
+      </ScrollView>
       </KeyboardAvoidingView>
+
+
     </SafeAreaView>
   );
 }
