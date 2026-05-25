@@ -42,6 +42,7 @@ export default function LoginScreen() {
         setLoading(true);
 
         const response = await loginUser(data);
+        console.log("Login response:", response);
 
         await login(
           response.token,
@@ -59,7 +60,7 @@ export default function LoginScreen() {
             clearPendingStation();
 
         } else {
-            router.back();
+            router.replace("/");
         }
 
       } catch (error) {
